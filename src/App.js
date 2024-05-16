@@ -1,24 +1,44 @@
 import logo from './logo.svg';
 import './App.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginuser } from './redux/authreducer';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import PrivateRoutes from './Privateroute';
+import { useEffect } from 'react';
+import Home from './Home';
+import About from './About';
 
 function App() {
+  const dispatch = useDispatch()
+  const isAuthenticated = useSelector((state) => state.isAuthenticated);
+  const login = () => {
+    localStorage.setItem("loginuser", 'true');
+    dispatch(loginuser({ type: 'LOGIN' }))
+  }
+
+    if (localStorage.getItem("loginuser")) {
+      dispatch(loginuser({ type: 'LOGIN' }))
+    }
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path={'/'} element={<Home login={login} />}>
+          </Route>
+          <Route element={<PrivateRoutes />}>
+            <Route path={'/about'} element={
+              <About />
+            }>
+            </Route>
+          </Route>
+        </Routes>
+      </BrowserRouter>
+      <br />
+      {isAuthenticated ? 'user login' : 'user not login'}
+
+    </>
   );
 }
 
